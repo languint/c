@@ -1,0 +1,22 @@
+{
+	"name": "inputr",
+	"packageManager": "pnpm@9.15.1",
+	"workspaces": [
+		"packages/*",
+		"docs",
+		"test"
+	],
+	"scripts": {
+		"packages:build": "pnpm --filter \"./packages/**\" build",
+		"core:build": "pnpm --filter @rbxts/inputr build",
+		"core:dev": "pnpm --filter @rbxts/inputr dev",
+		"core:devtest": "pnpm --filter @rbxts/inputr devtest",
+		"test:build": "pnpm --filter test build",
+		"test:dev": "pnpm --filter test dev",
+		"serve": "cd test && rojo serve"
+	},
+	"dependencies": {
+		"@rbxts/object-utils": "^1.0.4",
+		"shx": "^0.3.4"
+	}
+}

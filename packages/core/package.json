@@ -1,0 +1,32 @@
+{
+	"name": "@rbxts/inputr",
+	"description": "A flexible input animation library.",
+	"version": "1.0.0",
+	"license": "MIT",
+	"author": "longuint-rbx",
+	"main": "out/init.lua",
+	"types": "out/index.d.ts",
+	"files": [
+		"out",
+		"!**/*.tsbuildinfo"
+	],
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"prepack": "pnpm build",
+		"build": "shx rm -rf out && rbxtsc --verbose",
+		"dev": "shx rm -rf out && rbxtsc -w",
+		"devtest": "rbxtsc -w"
+	},
+	"devDependencies": {
+		"@rbxts/compiler-types": "^3.0.0-types.0",
+		"@rbxts/services": "1.5.5",
+		"roblox-ts": "3.0.0",
+		"shx": "^0.3.4",
+		"typescript": "=5.5.3"
+	},
+	"dependencies": {
+		"@rbxts/object-utils": "^1.0.4"
+	}
+}
