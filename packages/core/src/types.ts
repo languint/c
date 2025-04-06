@@ -10,4 +10,6 @@ export const MouseInput = {
 	Scroll: Enum.UserInputType.MouseWheel,
 } as const;
 
-export type MouseInput = typeof MouseInput[keyof typeof MouseInput];
+export type MouseInput = (typeof MouseInput)[keyof typeof MouseInput];
+
+export type CombinedInput = (Keycode | MouseInput) | (Keycode | MouseInput)[];

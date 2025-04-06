@@ -1,5 +1,6 @@
 import { UserInputService } from "@rbxts/services";
-import { Keycode } from "../types";
+import { CombinedInput, Keycode, MouseInput } from "../types";
+import { containsMouseInput } from "../utils";
 
 export namespace Keyboard {
 	type KeycodeCallback = (input: InputObject, processed: boolean) => void;
@@ -12,16 +13,23 @@ export namespace Keyboard {
 	}
 
 	export class Keyboard {
-		private listeners: Map<Keycode, KeycodeListener[]> = new Map();
-		private connections: Map<Keycode, RBXScriptConnection[]> = new Map();
+		private listeners: Map<CombinedInput, KeycodeListener[]> = new Map();
+		private connections: Map<CombinedInput, RBXScriptConnection[]> = new Map();
+		private doneListeners: Map<CombinedInput, boolean> = new Map();
 
 		register(
-			key: Keycode,
+			key: CombinedInput,
 			callbacks: KeycodeCallback | KeycodeCallback[],
 			event?: InputEvent,
 			once?: boolean,
 		): Keyboard {
 			callbacks = (typeIs(callbacks, "table") ? callbacks : [callbacks]) as KeycodeCallback[];
+
+			// Warn the user about any improper usage, and exit.
+			if (containsMouseInput(key)) {
+				warn(`Keyboard::register() You cannot use mouse events in Keyboards!`);
+				return this;
+			}
 
 			const existingListeners = this.listeners.get(key);
 			if (existingListeners) {
@@ -29,8 +37,8 @@ export namespace Keyboard {
 					...existingListeners,
 					{
 						callbacks: callbacks,
-						event: event ?? "Began",
-						once: once ?? false,
+						event: event !== undefined ? event : "Began",
+						once: once !== undefined ? once : false,
 					},
 				] as KeycodeListener[];
 
@@ -39,8 +47,8 @@ export namespace Keyboard {
 				this.listeners.set(key, [
 					{
 						callbacks: callbacks,
-						event: event ?? "Began",
-						once: once ?? false,
+						event: event !== undefined ? event : "Began",
+						once: once !== undefined ? once : false,
 					},
 				]);
 			}
@@ -52,7 +60,7 @@ export namespace Keyboard {
 			callbacks: KeycodeCallback[],
 			event: InputEvent,
 			once: boolean,
-			key: Keycode,
+			key: CombinedInput,
 		): RBXScriptConnection[] {
 			const connectEvent = () => {
 				switch (event) {
@@ -63,23 +71,47 @@ export namespace Keyboard {
 					case "Changed":
 						return UserInputService.InputChanged;
 					default:
-						break;
+						return undefined;
 				}
 			};
 
 			const eventConnection = connectEvent();
+			if (!eventConnection) {
+				warn(`Invalid event type: ${event}`);
+				return [];
+			}
+
 			const connections: RBXScriptConnection[] = [];
 
 			callbacks.forEach((callback) => {
 				const callbackFiltered = (input: InputObject, processed: boolean) => {
-					if (input.KeyCode === key) callback(input, processed);
+					const inputs = typeIs(key, "table") ? (key as (Keycode | MouseInput)[]) : [key];
+
+					if (this.doneListeners.get(key) === true && once) {
+						this.disconnect(key);
+						this.listeners.delete(key);
+						this.doneListeners.delete(key);
+						this.connections.delete(key);
+						return;
+					}
+
+					// Check if all keys in the inputs array are held
+					for (const inputKey of inputs) {
+						const held = UserInputService.IsKeyDown(inputKey as Keycode);
+
+						if (!held) return;
+					}
+
+					callback(input, processed);
+					this.doneListeners.set(key, true);
 				};
-				switch (once) {
-					case true:
-						connections.push(eventConnection?.Once(callbackFiltered)!);
-					default:
-						connections.push(eventConnection?.Connect(callbackFiltered)!);
+
+				const connection = eventConnection.Connect(callbackFiltered);
+
+				if (connection) {
+					connections.push(connection);
 				}
+
 			});
 
 			return connections;
@@ -97,7 +129,7 @@ export namespace Keyboard {
 			return this.connections;
 		}
 
-		disconnect(key: Keycode) {
+		disconnect(key: CombinedInput) {
 			const connections = this.connections.get(key);
 			if (!connections) return;
 			connections.forEach((c) => c.Disconnect());
