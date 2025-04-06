@@ -17,6 +17,7 @@
 	},
 	"dependencies": {
 		"@rbxts/object-utils": "^1.0.4",
+		"roblox-ts": "^3.0.0",
 		"shx": "^0.3.4"
 	}
 }
