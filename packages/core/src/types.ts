@@ -1,15 +1,18 @@
-// Type aliases
-export type Keycode = Enum.KeyCode;
-export const Keycodes = Enum.KeyCode;
+export enum Color {
+	WHITE, // 0
+	BLACK, // 1
+}
 
-export const MouseInput = {
-	LeftClick: Enum.UserInputType.MouseButton1,
-	RightClick: Enum.UserInputType.MouseButton2,
-	MiddleClick: Enum.UserInputType.MouseButton3,
-	Movement: Enum.UserInputType.MouseMovement,
-	Scroll: Enum.UserInputType.MouseWheel,
-} as const;
+// Differentiate between regular numbers, and numbers used for evaluation / search.
+export type Value = number;
 
-export type MouseInput = (typeof MouseInput)[keyof typeof MouseInput];
+export type Square = { rank: number; file: number };
 
-export type CombinedInput = (Keycode | MouseInput) | (Keycode | MouseInput)[];
+export type Move = { from: Square; to: Square };
+
+export enum Directions {
+	NORTH,
+	SOUTH,
+	EAST,
+	WEST,
+}

@@ -51,6 +51,12 @@ importers:
       '@flamework/networking':
         specifier: ^1.2.4
         version: 1.2.4(@flamework/core@1.2.4)
+      '@rbxts/jest':
+        specifier: ^0.1.0
+        version: 0.1.0
+      '@rbxts/jest-globals':
+        specifier: ^0.1.0
+        version: 0.1.0
       '@rbxts/services':
         specifier: ^1.5.5
         version: 1.5.5
@@ -64,12 +70,12 @@ importers:
         specifier: ^0.3.4
         version: 0.3.4
     devDependencies:
+      '@rbxts/chess':
+        specifier: workspace:^
+        version: link:../packages/core
       '@rbxts/compiler-types':
         specifier: 3.0.0-types.0
         version: 3.0.0-types.0
-      '@rbxts/inputr':
-        specifier: workspace:^
-        version: link:../packages/core
       '@rbxts/types':
         specifier: ^1.0.845
         version: 1.0.845
@@ -95,11 +101,29 @@ packages:
   '@rbxts/compiler-types@3.0.0-types.0':
     resolution: {integrity: sha512-VGOHJPoL7+56NTatMGqQj3K7xWuzEV+aP4QD5vZiHu+bcff3kiTmtoadaF6NkJrmwfFAvbsd4Dg764ZjWNceag==}
 
+  '@rbxts/jest-globals@0.1.0':
+    resolution: {integrity: sha512-k6sPSVfohlHRLLBT+LuK5xhWy87YzNg7LpcWmPkzXZUUM6iUU+uXWtphegcT+fR4ZHRXFt0tjDepA61uMRQQQA==}
+
+  '@rbxts/jest-matcher-utils@0.1.0':
+    resolution: {integrity: sha512-SvUm5b47KvxjXWMdg3Ei7nMaAurLI8uDlOR7lN02QNCSSqm1KekkLe1p/knc4adyZuq3L/07cDUSRYLCIgn9qA==}
+
+  '@rbxts/jest-vendor@0.1.0':
+    resolution: {integrity: sha512-qEQbp8cUtIkiOFoxIC2wR7ml3++0Pf56Xf17YIGTQRrQig3UAZincD+DHxVd/YNHft38MRGpD7FinWfroNxUNA==}
+
+  '@rbxts/jest@0.1.0':
+    resolution: {integrity: sha512-0JmmHh0vPbydCRhPWNaU8eb9RcY82i80RP6N5uJphLSZSV57kUvX8ahk1RhbPcn8xFoTmh+Pm6YEdGiPAzX1BA==}
+
   '@rbxts/maid@1.1.0':
     resolution: {integrity: sha512-bVWXZ0p2M3OJzPzvN5fY0T4s37ezUMY7EX31Xspp7Ds4C/K9yE4MHMRXjtlNvsYVPmoc5tdhAbpZY02Veix5lg==}
 
   '@rbxts/object-utils@1.0.4':
     resolution: {integrity: sha512-dLLhf022ipV+9i910sOE7kl9losKHoon0WgeerHqVMQA5EYsLUsVT2AxhJuhk8MiDn5oJ2GiFofE/LadY9TpJQ==}
+
+  '@rbxts/pretty-format@0.1.0':
+    resolution: {integrity: sha512-ZEZM6wd2kWXhXYcr+Q6Vey2wcre6JP6LDRX4u6PnLOEHmSy5XiLCmed1sicYFQfFYgkG5bRk+sGCySSWFEbqoA==}
+
+  '@rbxts/react-vendor@17.2.3':
+    resolution: {integrity: sha512-dWCiVelvTK6h920geaFH/OQ5zoWHyhyqyfH51hKx2/iVZ6OiiyNVJ5UqEIkJMG4HsJ8JnkTORizV3+MtQ41BtA==}
 
   '@rbxts/services@1.5.5':
     resolution: {integrity: sha512-Hu7QH2ecefS60zpakKG3T2vgABydoOJqpSG7nXr59wFAbPk/cA+OcsntYPHUWyHAat0VFGZ5jNZLTLdiqfssvg==}
@@ -493,9 +517,36 @@ snapshots:
 
   '@rbxts/compiler-types@3.0.0-types.0': {}
 
+  '@rbxts/jest-globals@0.1.0':
+    dependencies:
+      '@rbxts/jest-matcher-utils': 0.1.0
+      '@rbxts/jest-vendor': 0.1.0
+      '@rbxts/pretty-format': 0.1.0
+
+  '@rbxts/jest-matcher-utils@0.1.0':
+    dependencies:
+      '@rbxts/jest-vendor': 0.1.0
+      '@rbxts/pretty-format': 0.1.0
+
+  '@rbxts/jest-vendor@0.1.0':
+    dependencies:
+      '@rbxts/react-vendor': 17.2.3
+
+  '@rbxts/jest@0.1.0':
+    dependencies:
+      '@rbxts/jest-globals': 0.1.0
+      '@rbxts/jest-vendor': 0.1.0
+      '@rbxts/pretty-format': 0.1.0
+
   '@rbxts/maid@1.1.0': {}
 
   '@rbxts/object-utils@1.0.4': {}
+
+  '@rbxts/pretty-format@0.1.0':
+    dependencies:
+      '@rbxts/jest-vendor': 0.1.0
+
+  '@rbxts/react-vendor@17.2.3': {}
 
   '@rbxts/services@1.5.5': {}
 

@@ -1,5 +1,5 @@
 {
-	"name": "inputr",
+	"name": "chess",
 	"packageManager": "pnpm@9.15.1",
 	"workspaces": [
 		"packages/*",
@@ -8,9 +8,9 @@
 	],
 	"scripts": {
 		"packages:build": "pnpm --filter \"./packages/**\" build",
-		"core:build": "pnpm --filter @rbxts/inputr build",
-		"core:dev": "pnpm --filter @rbxts/inputr dev",
-		"core:devtest": "pnpm --filter @rbxts/inputr devtest",
+		"core:build": "pnpm --filter @rbxts/chess build",
+		"core:dev": "pnpm --filter @rbxts/chess dev",
+		"core:devtest": "pnpm --filter @rbxts/chess devtest",
 		"test:build": "pnpm --filter test build",
 		"test:dev": "pnpm --filter test dev",
 		"serve": "cd test && rojo serve"

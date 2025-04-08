@@ -1,6 +1,6 @@
 {
-	"name": "@rbxts/inputr",
-	"description": "A flexible input library.",
+	"name": "@rbxts/chess",
+	"description": "A flexible chess board & engine.",
 	"version": "1.0.0",
 	"license": "MIT",
 	"author": "longuint-rbx",

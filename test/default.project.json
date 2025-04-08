@@ -32,6 +32,13 @@
 					"$path": "out/client"
 				}
 			}
+		},
+		"TestService": {
+			"$className": "TestService",
+			"$properties": {
+				"ExecuteWithStudioRun": true
+			},
+			"$path": "out/test"
 		}
 	}
 }
