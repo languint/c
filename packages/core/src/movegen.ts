@@ -99,13 +99,20 @@ export namespace Movegen {
 						to: { rank: rank + direction, file: captureFile },
 					});
 				}
-
-				// En passant
 				// TODO: Implement en passant capture when the en passant square info is added
 			}
 		}
 
-		// TODO: Handle promotions
+		if (rank + direction === 7 || rank + direction === 0) {
+			const promotionPieces = ["knight", "bishop", "rook", "queen"];
+			promotionPieces.forEach((piece) => {
+				moves.push({
+					from: { rank, file },
+					to: { rank: rank + direction, file },
+					promotionPiece: piece,
+				});
+			});
+		}
 	}
 
 	// Generate all pseudo-legal knight moves
@@ -168,23 +175,17 @@ export namespace Movegen {
 		generateSlidingMoves(board, rank, file, BISHOP_DIRECTIONS, moves);
 	}
 
-	/**
-	 * Generate all pseudo-legal rook moves
-	 */
+	// Generate all pseudo-legal rook moves
 	export function generateRookMoves(board: Board.Board, rank: number, file: number, moves: Move[]): void {
 		generateSlidingMoves(board, rank, file, ROOK_DIRECTIONS, moves);
 	}
 
-	/**
-	 * Generate all pseudo-legal queen moves
-	 */
+	// Generate all pseudo-legal queen moves
 	export function generateQueenMoves(board: Board.Board, rank: number, file: number, moves: Move[]): void {
 		generateSlidingMoves(board, rank, file, QUEEN_DIRECTIONS, moves);
 	}
 
-	/**
-	 * Generate all pseudo-legal king moves
-	 */
+	// Generate all pseudo-legal king moves
 	export function generateKingMoves(board: Board.Board, rank: number, file: number, moves: Move[]): void {
 		const color = board.colorBoard.getBit(rank, file) ? Color.BLACK : Color.WHITE;
 
@@ -205,9 +206,7 @@ export namespace Movegen {
 		generateCastlingMoves(board, rank, file, moves);
 	}
 
-	/**
-	 * Generate castling moves for the king
-	 */
+	// Generate castling moves for the king
 	export function generateCastlingMoves(board: Board.Board, rank: number, file: number, moves: Move[]): void {
 		const color = board.colorBoard.getBit(rank, file) ? Color.BLACK : Color.WHITE;
 		const castlingRights = board.castlingRights;
@@ -289,9 +288,7 @@ export namespace Movegen {
 		}
 	}
 
-	/**
-	 * Check if a square is under attack by the specified color
-	 */
+	// Check if a square is under attack by the specified color
 	export function isSquareAttacked(board: Board.Board, rank: number, file: number, byColor: Color): boolean {
 		// Check pawn attacks
 		const pawnDirection = byColor === Color.WHITE ? -1 : 1;
@@ -385,9 +382,7 @@ export namespace Movegen {
 		return false;
 	}
 
-	/**
-	 * Generate all pseudo-legal moves for a specific piece at the given position
-	 */
+	// Generate all pseudo-legal moves for a specific piece at the given position
 	export function generatePieceMoves(board: Board.Board, rank: number, file: number, moves: Move[]): void {
 		if (!isSquareOccupied(board, rank, file)) return;
 
@@ -406,9 +401,7 @@ export namespace Movegen {
 		}
 	}
 
-	/**
-	 * Generate all pseudo-legal moves for a given color
-	 */
+	// Generate all pseudo-legal moves for a given color
 	export function generateMovesForColor(board: Board.Board, color: Color): Move[] {
 		const moves: Move[] = [];
 
@@ -423,9 +416,7 @@ export namespace Movegen {
 		return moves;
 	}
 
-	/**
-	 * Check if the king of the given color is in check
-	 */
+	// Check if the king of the given color is in check
 	export function isKingInCheck(board: Board.Board, color: Color): boolean {
 		// Find the king's position
 		let kingRank = -1;
@@ -448,10 +439,7 @@ export namespace Movegen {
 		return isSquareAttacked(board, kingRank, kingFile, color === Color.WHITE ? Color.BLACK : Color.WHITE);
 	}
 
-	/**
-	 * Generate all legal moves for the current position
-	 * These are pseudo-legal moves filtered to avoid leaving the king in check
-	 */
+	// Generate all legal moves for the current position
 	export function generateLegalMoves(board: Board.Board): Move[] {
 		const color = board.currentMove;
 		const pseudoLegalMoves = generateMovesForColor(board, color);
@@ -471,15 +459,13 @@ export namespace Movegen {
 		return legalMoves;
 	}
 
-	/**
-	 * Create a copy of the board and make a hypothetical move for checking legality
-	 */
+	// Create a copy of the board and make a hypothetical move for checking legality
 	export function makeHypotheticalMove(board: Board.Board, move: Move): Board.Board {
 		// Clone the board
 		const newBoard = Board.create(board.getFen());
 
 		// Extract move details
-		const { from, to } = move;
+		const { from, to, promotionPiece } = move;
 
 		// Find which piece is moving
 		let pieceType = "";
@@ -530,9 +516,6 @@ export namespace Movegen {
 		newBoard.piecesBoard.setBit(to.rank, to.file, true);
 		newBoard.colorBoard.setBit(to.rank, to.file, color === Color.BLACK);
 		switch (pieceType) {
-			case "pawn":
-				newBoard.pawnsBoard.setBit(to.rank, to.file, true);
-				break;
 			case "knight":
 				newBoard.knightsBoard.setBit(to.rank, to.file, true);
 				break;
@@ -544,9 +527,6 @@ export namespace Movegen {
 				break;
 			case "queen":
 				newBoard.queensBoard.setBit(to.rank, to.file, true);
-				break;
-			case "king":
-				newBoard.kingsBoard.setBit(to.rank, to.file, true);
 				break;
 		}
 
@@ -566,7 +546,33 @@ export namespace Movegen {
 			newBoard.rooksBoard.setBit(from.rank, rookToFile, true);
 		}
 
-		// TODO: Handle en passant and pawn promotion
+		//!TODO: Handle en passant
+
+		if (promotionPiece) {
+			newBoard.piecesBoard.setBit(from.rank, from.file, false);
+			newBoard.colorBoard.setBit(from.rank, from.file, false); // Doesn't matter since there is no piece there.
+			newBoard.colorBoard.setBit(to.file, to.rank, color === Color.BLACK);
+			switch (promotionPiece) {
+				case "pawn":
+					newBoard.pawnsBoard.setBit(to.rank, to.file, true);
+					break;
+				case "knight":
+					newBoard.knightsBoard.setBit(to.rank, to.file, true);
+					break;
+				case "bishop":
+					newBoard.bishopsBoard.setBit(to.rank, to.file, true);
+					break;
+				case "rook":
+					newBoard.rooksBoard.setBit(to.rank, to.file, true);
+					break;
+				case "queen":
+					newBoard.queensBoard.setBit(to.rank, to.file, true);
+					break;
+				case "king":
+					newBoard.kingsBoard.setBit(to.rank, to.file, true);
+					break;
+			}
+		}
 
 		return newBoard;
 	}
